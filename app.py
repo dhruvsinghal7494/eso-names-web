@@ -1,6 +1,8 @@
 import streamlit as st
 from eso_names.raw_model import RNN
 from eso_names.main import names_generator, names_recommendor
+import random
+import string
 
 st.set_page_config(
     page_title="ESO Names Generator",
@@ -17,14 +19,17 @@ def generate_character_names():
     gender = st.selectbox("Select Gender", ["male", "female"])
     category = st.selectbox("Select Race/Category", ["Altmer", "Argonian", "Bosmer", "Breton", "Dunmer", "Imperial",
        "Khajit", "Nord", "Orc", "Redguard"])
-    start_letter = st.text_input("Starting Letter")
+    start_letter = st.text_input("Starting Letter", value="A")
     quantity = st.slider("Number of Names", 1, 100, 10)
 
     if st.button("Generate Names"):
-        generated_names = names_generator(gender=gender, category=category, start_letter=start_letter.capitalize(), quantity=quantity)
-        st.markdown(f"**Generated Names:**\n")
-        for name in generated_names:
-            st.success(name)
+        if not start_letter.strip():  
+            st.error("Please enter a capital alphabet letter.")
+        else:
+            generated_names = names_generator(gender=gender, category=category, start_letter=start_letter.capitalize(), quantity=quantity)
+            st.markdown(f"**Generated Names:**\n")
+            for name in generated_names:
+                st.success(name)
 
 # Function to Recommend Names
 def recommend_character_names():
@@ -39,7 +44,8 @@ def recommend_character_names():
 
     if st.button("Recommend Names"):
         recommended_names = names_recommendor(gender=gender, category=category, start_letter=start_letter.capitalize(), quantity=quantity, similarity_threshold=similarity_threshold, similar_to=similar_to)
-        st.success(f"Recommended Names: {', '.join(recommended_names)}")
+        for name in recommended_names:
+            st.success(name)            
 
 # Sidebar Navigation
 menu_option = st.selectbox("Select Option", ["Generate Names", "Recommend Names"])
